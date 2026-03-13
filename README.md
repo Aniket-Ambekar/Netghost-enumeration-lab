@@ -32,3 +32,14 @@ The objective is to analyze simulated outputs from common enumeration tools and 
 - smb-os-discovery
 
 ## Flag Format
+
+Flags are validated using SHA-256 hash comparison.
+
+## Running the Lab
+
+1. Download the HTML file
+2. Open it in any browser
+3. Analyze the simulated outputs
+4. Extract flags and submit
+
+No installation required.
