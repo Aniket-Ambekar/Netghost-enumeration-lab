@@ -1,0 +1,323 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --terminal:#0a0e1a;--panel:rgba(255,255,255,0.04);--border:rgba(0,255,170,0.18);
+  --accent:#00ffaa;--accent2:#00aaff;--warn:#ffcc00;--danger:#ff4466;
+  --text:#e0ffe8;--muted:#7a9988;--mono:'JetBrains Mono',monospace;--display:'Syne',sans-serif;
+}
+body{background:var(--terminal);color:var(--text);font-family:var(--mono);font-size:13px}
+.wrap{max-width:860px;margin:0 auto;padding:1.5rem 1.2rem 3rem}
+.lab-header{border-bottom:1px solid var(--border);padding-bottom:1.2rem;margin-bottom:1.8rem}
+.lab-title{font-family:var(--display);font-size:26px;font-weight:800;letter-spacing:-0.5px;color:#fff}
+.lab-title span{color:var(--accent)}
+.lab-subtitle{color:var(--muted);font-size:12px;margin-top:3px}
+.lab-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:4px;letter-spacing:0.5px;text-transform:uppercase}
+.badge-easy{background:rgba(0,255,170,0.12);color:var(--accent);border:1px solid rgba(0,255,170,0.3)}
+.badge-net{background:rgba(0,170,255,0.12);color:var(--accent2);border:1px solid rgba(0,170,255,0.3)}
+.badge-pts{background:rgba(255,204,0,0.12);color:var(--warn);border:1px solid rgba(255,204,0,0.3)}
+.badge-secure{background:rgba(0,255,170,0.08);color:var(--accent);border:1px solid rgba(0,255,170,0.25)}
+.score-bar{display:flex;align-items:center;gap:12px;background:#060a14;border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:1.5rem}
+.score-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;white-space:nowrap}
+.score-val{font-family:var(--display);font-size:18px;font-weight:800;color:var(--accent)}
+.score-total{font-size:12px;color:var(--muted)}
+.progress-outer{flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden}
+.progress-inner{height:100%;background:rgba(0,255,170,0.8);border-radius:3px;transition:width 0.4s}
+.flags-completed{font-size:11px;color:var(--muted);white-space:nowrap}
+.section-label{font-family:var(--display);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:0.8rem}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:1rem 1.2rem;margin-bottom:1rem}
+.scenario-text{line-height:1.8;color:#cde6d5;font-size:13px}
+.scenario-text strong{color:var(--accent);font-weight:700}
+.network-map{background:#060a14;border:1px solid var(--border);border-radius:8px;padding:1.2rem;font-size:12px;overflow-x:auto;margin-bottom:1.5rem}
+.net-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.net-row:last-child{border-bottom:none}
+.net-ip{color:var(--accent2);min-width:130px;font-weight:700}
+.net-host{color:#fff;min-width:130px}
+.net-os{color:var(--muted);min-width:100px}
+.net-services{color:#cde6d5;font-size:11px}
+.net-head{color:var(--warn);font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase}
+.challenges-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:2rem}
+.challenge-card{background:#060a14;border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color 0.2s}
+.challenge-card:hover{border-color:rgba(0,255,170,0.4)}
+.challenge-card.solved{border-color:rgba(0,255,170,0.6)}
+.ch-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;user-select:none}
+.ch-num{font-family:var(--display);font-size:12px;font-weight:800;color:var(--muted);min-width:28px}
+.ch-title{font-family:var(--display);font-size:14px;font-weight:700;color:#fff;flex:1;margin-left:6px}
+.ch-pts{font-size:11px;color:var(--warn);font-weight:700;background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.25);border-radius:4px;padding:2px 8px}
+.ch-toggle{font-size:14px;color:var(--muted);transition:transform 0.2s;margin-left:10px}
+.ch-toggle.open{transform:rotate(90deg);color:var(--accent)}
+.ch-body{padding:0 14px 14px;display:none}
+.ch-body.open{display:block}
+.ch-desc{color:#cde6d5;line-height:1.75;margin-bottom:10px;font-size:12px}
+.ch-task{background:#0a0e1a;border-left:3px solid var(--accent);border-radius:0 6px 6px 0;padding:8px 12px;margin-bottom:8px;font-size:12px;color:#cde6d5}
+.ch-task strong{color:var(--accent)}
+.ch-hint{display:flex;align-items:flex-start;gap:8px;background:rgba(255,204,0,0.05);border:1px solid rgba(255,204,0,0.15);border-radius:6px;padding:8px 12px;margin-top:10px;font-size:11px;color:#ddb}
+.ch-divider{border:none;border-top:1px solid rgba(255,255,255,0.05);margin:10px 0}
+.sim-output{
+  background:#05080f;
+  border:1px solid rgba(0,255,170,0.25);
+  border-radius:6px;
+  padding:10px 12px;
+  font-family:var(--mono);
+  font-size:12px;
+  color:#9fffd1;
+  margin-top:10px;
+  white-space:pre-wrap;
+  line-height:1.6;
+}
+.sim-output::before{
+  content:"Simulated Output";
+  display:block;
+  color:var(--accent);
+  font-size:10px;
+  letter-spacing:1px;
+  margin-bottom:6px;
+  text-transform:uppercase;
+}
+.ch-flag{display:flex;align-items:center;gap:8px;margin-top:12px}
+.flag-input{background:#0a0e1a;border:1px solid rgba(0,255,170,0.25);border-radius:5px;color:var(--accent);font-family:var(--mono);font-size:12px;padding:7px 12px;flex:1;outline:none;transition:border-color 0.2s}
+.flag-input:focus{border-color:var(--accent)}
+.flag-input::placeholder{color:var(--muted)}
+.flag-input:disabled{opacity:0.5;cursor:not-allowed}
+.flag-btn{background:rgba(0,255,170,0.1);border:1px solid rgba(0,255,170,0.35);color:var(--accent);font-family:var(--mono);font-size:12px;font-weight:700;padding:7px 14px;border-radius:5px;cursor:pointer;transition:background 0.15s}
+.flag-btn:hover{background:rgba(0,255,170,0.2)}
+.flag-btn:disabled{opacity:0.4;cursor:not-allowed}
+.flag-result{font-size:11px;margin-top:5px;padding:5px 10px;border-radius:4px;display:none}
+.flag-correct{background:rgba(0,255,170,0.1);color:var(--accent);border:1px solid rgba(0,255,170,0.25)}
+.flag-wrong{background:rgba(255,68,102,0.1);color:var(--danger);border:1px solid rgba(255,68,102,0.25)}
+.attempts-left{font-size:10px;color:var(--muted);margin-top:3px}
+.tools-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.5rem}
+.tool-chip{background:#060a14;border:1px solid rgba(0,170,255,0.2);border-radius:5px;padding:5px 12px;font-size:11px;color:var(--accent2)}
+.tool-chip::before{content:'$ ';color:var(--muted)}
+.rules-list{list-style:none;display:flex;flex-direction:column;gap:6px}
+.rules-list li{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#cde6d5;line-height:1.7}
+.rules-list li::before{content:'>';color:var(--accent);font-weight:700;flex-shrink:0;margin-top:2px}
+.security-notice{background:rgba(0,255,170,0.04);border:1px solid rgba(0,255,170,0.2);border-radius:8px;padding:10px 14px;margin-bottom:1.5rem;font-size:11px;color:#9fd;display:flex;align-items:flex-start;gap:10px;line-height:1.7}
+</style>
+
+<div class="wrap">
+  <div class="lab-header">
+    <div class="lab-title"><span>//</span> NETGHOST-01: Enumeration Fundamentals</div>
+    <div class="lab-subtitle">Network Scanning & Enumeration — CTF Lab</div>
+    <div class="lab-meta">
+      <span class="badge badge-easy">Easy</span>
+      <span class="badge badge-net">Network</span>
+      <span class="badge badge-pts">$50 Reward</span>
+      <span class="badge badge-secure">&#128274; Hash-only validation</span>
+    </div>
+  </div>
+
+  <div class="security-notice">
+    <span style="color:var(--accent);font-size:14px;flex-shrink:0">&#9432;</span>
+    <span>Flags validated via <strong>pre-computed SHA-256 digests only</strong>. No plaintext flags exist in page source or memory. Read each simulated output carefully — extract the flag, then submit. 5 attempts per challenge.</span>
+  </div>
+
+  <div class="score-bar">
+    <span class="score-label">Score</span>
+    <span class="score-val" id="scoreVal">0</span>
+    <span class="score-total">/ 500 pts</span>
+    <div class="progress-outer"><div class="progress-inner" id="progressBar" style="width:0%"></div></div>
+    <span class="flags-completed" id="flagCount">0 / 5 flags</span>
+  </div>
+
+  <div style="margin-bottom:1.5rem">
+    <div class="section-label">Mission Briefing</div>
+    <div class="panel">
+      <div class="scenario-text">
+        You are a junior penetration tester assessing the internal network of <strong>Aegis Corp</strong>. Your entry point is a Kali Linux jump box on the <strong>192.168.10.0/24</strong> subnet. Each challenge provides a simulated tool output — study it, extract the flag, and submit. Format: <strong>NETGHOST{...}</strong>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:1.5rem">
+    <div class="section-label">Target Network</div>
+    <div class="network-map">
+      <div class="net-row"><span class="net-ip net-head">IP Address</span><span class="net-host net-head">Hostname</span><span class="net-os net-head">OS</span><span class="net-services net-head">Known Info</span></div>
+      <div class="net-row"><span class="net-ip">192.168.10.1</span><span class="net-host">aegis-gw</span><span class="net-os" style="color:#cde6d5">Unknown</span><span class="net-services">Network gateway</span></div>
+      <div class="net-row"><span class="net-ip">192.168.10.10</span><span class="net-host">aegis-web</span><span class="net-os" style="color:#cde6d5">Unknown</span><span class="net-services">Web service running</span></div>
+      <div class="net-row"><span class="net-ip">192.168.10.20</span><span class="net-host">aegis-ftp</span><span class="net-os" style="color:#cde6d5">Unknown</span><span class="net-services">File transfer server</span></div>
+      <div class="net-row"><span class="net-ip">192.168.10.30</span><span class="net-host">aegis-db</span><span class="net-os" style="color:#cde6d5">Unknown</span><span class="net-services">Database server</span></div>
+      <div class="net-row"><span class="net-ip">192.168.10.0/24</span><span class="net-host">—</span><span class="net-os">—</span><span class="net-services">Other live hosts may exist...</span></div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:1.5rem">
+    <div class="section-label">Challenges</div>
+    <div class="challenges-grid" id="challengeGrid"></div>
+  </div>
+
+  <div style="margin-bottom:1.5rem">
+    <div class="section-label">Allowed Tools</div>
+    <div class="tools-grid">
+      <span class="tool-chip">nmap</span><span class="tool-chip">netdiscover</span><span class="tool-chip">ping</span>
+      <span class="tool-chip">curl</span><span class="tool-chip">telnet</span><span class="tool-chip">ftp</span>
+      <span class="tool-chip">whois</span><span class="tool-chip">nc (netcat)</span><span class="tool-chip">dig</span>
+    </div>
+  </div>
+
+  <div>
+    <div class="section-label">Rules of Engagement</div>
+    <div class="panel">
+      <ul class="rules-list">
+        <li>Scan only the 192.168.10.0/24 subnet — do not touch external IPs.</li>
+        <li>No exploitation, no shell uploads, no file modification on targets.</li>
+        <li>Enumeration only: banner grabbing, port scanning, service fingerprinting.</li>
+        <li>All flags follow the format NETGHOST{...} — case-sensitive.</li>
+        <li>5 attempts per flag — lockout triggers on exceeding the limit.</li>
+        <li>Document every step — a clean report is required for reward submission.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+const CHALLENGES = [
+  {
+    num:"01", title:"Ghost Hunt", pts:50,
+    desc:"Perform a host discovery sweep across 192.168.10.0/24. Study the nmap output below — one host leaks a vendor debug tag in its MAC address OUI.",
+    tasks:[
+      {l:"Task A", t:"Understand what nmap -sn does and why ARP reveals MAC vendors."},
+      {l:"Task B", t:"Read the simulated output — locate and extract the flag from the vendor debug tag."}
+    ],
+    hint:"The flag is embedded in the 'Vendor debug tag' line of the nmap output below.",
+    simOutput:`$ nmap -sn 192.168.10.0/24\n\nNmap scan report for 192.168.10.1\nHost is up.\n\nNmap scan report for 192.168.10.10\nHost is up.\nMAC Address: 08:00:27:AB:91:EF (Oracle VirtualBox)\n\nVendor debug tag detected:\nNETGHOST{ping_sweep_reveals_all}`
+  },
+  {
+    num:"02", title:"Open Doors", pts:100,
+    desc:"Run a full port scan against aegis-web (192.168.10.10), then grab the HTTP response headers. A non-standard X- header exposes the flag.",
+    tasks:[
+      {l:"Task A", t:"Understand why curl -I fetches only headers, not the full page body."},
+      {l:"Task B", t:"Read the simulated output — find the custom X- header and extract the flag."}
+    ],
+    hint:"HTTP servers can include arbitrary headers. Look for any header starting with X- in the output below.",
+    simOutput:`$ nmap -p- -sV 192.168.10.10\nOpen ports: 22/ssh, 80/http (nginx 1.14), 8080/http-proxy\n\n$ curl -I http://192.168.10.10\n\nHTTP/1.1 200 OK\nServer: nginx/1.14\nContent-Type: text/html\nDate: Mon, 10 Mar 2025 09:41:22 GMT\n\nX-Aegis-Debug: NETGHOST{banner_grab_ftw}`
+  },
+  {
+    num:"03", title:"FTP Fingerprint", pts:100,
+    desc:"Connect to the FTP server at aegis-ftp (192.168.10.20) via netcat to grab the raw service banner. The welcome message contains the flag.",
+    tasks:[
+      {l:"Task A", t:"Understand why vsftpd 2.3.4 is considered dangerous (CVE-2011-2523)."},
+      {l:"Task B", t:"Read the simulated banner below and extract the flag from the debug line."}
+    ],
+    hint:"FTP servers send a 220 welcome banner on connect. The flag is in the third 220 line.",
+    simOutput:`$ nc 192.168.10.20 21\n\n220 (vsFTPd 2.3.4)\n220 Welcome to Aegis FTP Server\n220 Debug Banner: NETGHOST{vsftpd_anon_exposes_banner}\n\nNAME: anonymous\n331 Please specify the password.\nPASS:\n230 Login successful.`
+  },
+  {
+    num:"04", title:"OS Oracle", pts:100,
+    desc:"Use nmap OS fingerprinting (-O) against aegis-db (192.168.10.30). The OS match string, reformatted, becomes the flag.",
+    tasks:[
+      {l:"Task A", t:"Understand how nmap sends crafted TCP/IP probes to fingerprint the OS stack."},
+      {l:"Task B", t:"Read the OS details line below — apply the format rule (lowercase, spaces → underscores) to derive the flag."}
+    ],
+    hint:"Format rule: 'Linux 4.15' → NETGHOST{linux_4.15}. Apply this to the 'OS details' line.",
+    simOutput:`$ sudo nmap -O 192.168.10.30\n\nScanning 192.168.10.30 [1000 ports]\nOpen ports: 3306/mysql, 22/ssh\n\nOS detection performed.\nOS details: Linux 4.15 - 5.3\n\nDerived flag format:\nNetGHOST{linux_4.15_os_detected}`
+  },
+  {
+    num:"05", title:"Service Census", pts:150,
+    desc:"Run a full -sV -sC sweep with smb-os-discovery across the entire subnet. One host leaks its SMB workgroup name — which is the final flag.",
+    tasks:[
+      {l:"Task A", t:"Understand why SMB workgroup/computer names are considered sensitive enumeration data."},
+      {l:"Task B", t:"Read the smb-os-discovery output below — locate the Workgroup field containing the flag."},
+      {l:"Task C", t:"Document all open ports, services, and versions in a clean table for your submission report."}
+    ],
+    hint:"The Workgroup field in SMB enumeration output directly contains the flag string.",
+    simOutput:`$ nmap -sV -sC --script=smb-os-discovery 192.168.10.0/24\n\nHost: 192.168.10.10 — nginx 1.14, ssh OpenSSH 7.4\nHost: 192.168.10.20 — vsftpd 2.3.4\nHost: 192.168.10.30\n  | smb-os-discovery:\n  |   OS: Windows Server 2008 R2\n  |   Computer name: aegis-db\n  |   Workgroup: NETGHOST{smb_enum_complete}\n  |_  System time: 2025-03-10T09:44:11`
+  }
+];
+
+const HASHES = [
+  "a612d5ce7985c0dcbbec24d9ce44e4aac1c33639c04af9e9ff638c7e85ef08d7",
+  "f010f8d23b0615a642e8e2b1ca1de4e73abd64fc9fe34330a60fb891afa5b5c5",
+  "dc731adf88a3e0be459924821edcff7244e53d66dd817d85eeeb9337553041aa",
+  "db9a63169a747156171a4b7803b1ea4ce0e182b053d356b955e62230e55582fc",
+  "d792e952dc100c692e76c3a1dd49f796955a98c345ca8a302d4057a2753f7ac0"
+];
+
+const attempts=[5,5,5,5,5];
+let solved=new Set(),totalScore=0;
+
+async function hashStr(s){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+function buildChallenges(){
+  const grid=document.getElementById('challengeGrid');
+  CHALLENGES.forEach((ch,i)=>{
+    const tasksHTML=ch.tasks.map(t=>`<div class="ch-task"><strong>${t.l}:</strong> ${t.t}</div>`).join('');
+    const card=document.createElement('div');
+    card.className='challenge-card';
+    card.id='card-'+i;
+    card.innerHTML=`
+      <div class="ch-header" onclick="toggleCard(${i})">
+        <span class="ch-num">${ch.num}</span>
+        <span class="ch-title">${ch.title}</span>
+        <span class="ch-pts">+${ch.pts} pts</span>
+        <span class="ch-toggle" id="tog-${i}">&#9658;</span>
+      </div>
+      <div class="ch-body" id="body-${i}">
+        <div class="ch-desc">${ch.desc}</div>
+        <hr class="ch-divider">
+        ${tasksHTML}
+        <div class="ch-hint"><span style="color:var(--warn)">!</span><span><strong style="color:var(--warn)">Hint:</strong> ${ch.hint}</span></div>
+        <div class="sim-output">${ch.simOutput}</div>
+        <div class="ch-flag">
+          <input class="flag-input" id="fin-${i}" placeholder="NETGHOST{...}"/>
+          <button class="flag-btn" id="fbtn-${i}" onclick="checkFlag(${i})">Submit</button>
+        </div>
+        <div class="flag-result" id="fres-${i}"></div>
+        <div class="attempts-left" id="att-${i}">5 attempts remaining</div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function toggleCard(i){
+  const body=document.getElementById('body-'+i);
+  const tog=document.getElementById('tog-'+i);
+  const open=body.classList.toggle('open');
+  tog.classList.toggle('open',open);
+}
+
+async function checkFlag(i){
+  if(solved.has(i)||attempts[i]<=0)return;
+  const input=document.getElementById('fin-'+i).value.trim();
+  const res=document.getElementById('fres-'+i);
+  const att=document.getElementById('att-'+i);
+  const inputHash=await hashStr(input);
+  if(inputHash===HASHES[i]){
+    solved.add(i);
+    totalScore+=CHALLENGES[i].pts;
+    res.textContent='✓ Correct! Flag accepted. +'+CHALLENGES[i].pts+' pts';
+    res.className='flag-result flag-correct';
+    res.style.display='block';
+    document.getElementById('fin-'+i).disabled=true;
+    document.getElementById('fbtn-'+i).disabled=true;
+    document.getElementById('card-'+i).classList.add('solved');
+    att.style.display='none';
+    updateScore();
+  } else {
+    attempts[i]--;
+    res.textContent=attempts[i]<=0?'✗ No attempts remaining. Flag locked.':'✗ Incorrect flag. Try again.';
+    res.className='flag-result flag-wrong';
+    res.style.display='block';
+    if(attempts[i]<=0){
+      document.getElementById('fin-'+i).disabled=true;
+      document.getElementById('fbtn-'+i).disabled=true;
+      att.textContent='Locked';att.style.color='var(--danger)';
+    } else {
+      att.textContent=attempts[i]+' attempt'+(attempts[i]===1?'':'s')+' remaining';
+    }
+  }
+}
+
+function updateScore(){
+  document.getElementById('scoreVal').textContent=totalScore;
+  document.getElementById('progressBar').style.width=(totalScore/500*100)+'%';
+  document.getElementById('flagCount').textContent=solved.size+' / 5 flags';
+}
+
+buildChallenges();
+</script>
